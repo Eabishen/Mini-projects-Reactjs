@@ -11,7 +11,7 @@ function App() {
         </h1>
         <p className="text-xl pl-6 ">Welcome</p>
         <div className="flex items-center gap-2">
-          <p className="text-xl pl-6">click </p>
+          <p className="text-xl pl-6">click</p>
           <AddTask />
           <p> to add new task</p>
         </div>
