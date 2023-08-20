@@ -1,28 +1,78 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const AddTask = () => {
-  const [addModal, setAddModal] = useState(false);
+const EditTask = ({ task, taskList, setTaskList }) => {
+  const [editModal, setEditModal] = useState(false);
+  const [projectName, setProjectName] = useState("");
+  const [taskDescription, setTaskDescription] = useState("");
+
+  const handleInput = (e) => {
+    const { name, value } = e.target;
+
+    name === "projectName" && setProjectName(value);
+    name === "taskDescription" && setTaskDescription(value);
+  };
+
+  useEffect(() => {
+    setProjectName(task.projectName);
+    setTaskDescription(task.taskDescription);
+  }, []);
+
+  const handleUpdate = (e) => {
+    e.preventDefault();
+    const taskindex = taskList.indexOf(task);
+    taskList.splice(taskindex, 1, {
+      projectName: projectName,
+      taskDescription: taskDescription,
+      timeStamp: task.timeStamp,
+      duration: task.duration,
+    });
+    // setTaskList([...taskList, { projectName, taskDescription }]);
+    localStorage.setItem("tasks", JSON.stringify(taskList));
+    window.location.reload();
+    setEditModal(false);
+  };
+
+  const handleDelete = (itemID) => {
+    const removeId = taskList.indexOf(task);
+    taskList.splice(removeId, 1);
+
+    localStorage.setItem("tasks", JSON.stringify(taskList));
+    window.location.reload();
+
+    // setTaskList((currenttask) =>
+    //   currenttask.filter((current) => current.id !== itemID)
+    // );
+  };
 
   return (
     <>
-      <button
-        onClick={() => setAddModal(true)}
-        className="bg-violet-500/40 py-1.5 px-2.5 rounded uppercase text-lg font-semibold my-3.5 hover:bg-opacity-80"
-      >
-        New+
-      </button>
-      {addModal ? (
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => setEditModal(true)}
+          className="text-sm uppercase bg-violet-500/40 rounded-md font-semibold tracking-wider py-1 px-2"
+        >
+          Edit
+        </button>
+        <button
+          onClick={handleDelete}
+          className="bg-red-600 uppercase text-sm font-semibold text-red-50 py-1 px-2 rounded-md"
+        >
+          delete
+        </button>
+      </div>
+
+      {editModal ? (
         <>
           <div
             className="overflow-x-hidden flex items-center justify-center overflow-y-auto 
           fixed inset-0 z-[100] bg-black bg-opacity-60"
           >
-            <div className="bg-violet-900 p-5 rounded-md border shadow-md shadow-violet-600/20 w-auto md:w-9/12 max-w-lg border-violet-800 ">
+            <div className="bg-violet-900 p-5 rounded-md border shadow-md shadow-violet-600/20 w-auto md:w-9/12 max-w-lg border-violet-800">
               <div className="flex flew-row justify-between">
-                <h3 className="text-3xl font-semibold">Add New Task</h3>
+                <h3 className="text-3xl font-semibold">Edit Task</h3>
                 <button
                   className="p-1 text-red-400 float-right text-xl leading-none font-semibold block"
-                  onClick={() => setAddModal(false)}
+                  onClick={() => setEditModal(false)}
                 >
                   &#10006;
                 </button>
@@ -40,15 +90,14 @@ const AddTask = () => {
                     type="text"
                     autoComplete="off"
                     name="projectName"
+                    autoFocus
                     id="project-name"
                     placeholder="Project Name"
                     required
                     value={projectName}
-                    autoFocus
                     onChange={handleInput}
                   />
                 </div>
-                <p className="text-red-400">{errorMessage}</p>
                 <div className="my-4">
                   <label htmlFor="task-description">Task Description</label>
                   <textarea
@@ -65,10 +114,10 @@ const AddTask = () => {
                 </div>
                 <div>
                   <button
-                    onClick={handleAdd}
+                    onClick={handleUpdate}
                     className="w-full p-3 rounded shadow-lg focus:shadow-sm hover:shadow-sm shadow-violet-500/20 uppercase font-bold transition-all ease-in border-none bg-violet-950 border border-violet-500 focus:outline-none focus:ring focus:ring-violet-500"
                   >
-                    Add
+                    Update
                   </button>
                 </div>
               </form>
@@ -80,4 +129,4 @@ const AddTask = () => {
   );
 };
 
-export default AddTask;
+export default EditTask;
